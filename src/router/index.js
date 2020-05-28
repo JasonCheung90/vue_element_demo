@@ -9,6 +9,11 @@ const routes = [{
   component: () => import('../components/Login')
 },
 {
+  path: '/home',
+  name: 'home',
+  component: () => import('../components/Home')
+},
+{
   path: '/',
   redirect: '/login'
 }]
@@ -19,4 +24,10 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') return next()
+  const tokenStr = sessionStorage.getItem('token')
+  if (tokenStr) return next()
+  next('/login')
+})
 export default router

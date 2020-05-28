@@ -8,7 +8,8 @@ export default {
   name: 'home',
   data() {
     return {
-      age: 18
+      age: 18,
+      job: 'wrg'
     }
   },
   methods: {

@@ -38,7 +38,7 @@
 <script>
 export default {
   name: 'login',
-  data() {
+  data () {
     return {
       loginForm: {
         username: 'admin',
@@ -63,20 +63,17 @@ export default {
   },
   methods: {
     // 重置登录表单
-    resetForm() {
+    resetForm () {
       this.$refs.loginFormRef.resetFields()
     },
     // 登录提交
-    loginCommit() {
+    loginCommit () {
       this.$refs.loginFormRef.validate(async check => {
-        if (!check) {
-          return false
-        }
+        if (!check) return false
         const { data: loginResult } = await this.axios.post(
           'login',
           this.loginForm
         )
-        console.log(loginResult)
         if (loginResult.meta.status === 200) {
           // 把token存入sessionStorage
           sessionStorage.setItem('token', loginResult.data.token)

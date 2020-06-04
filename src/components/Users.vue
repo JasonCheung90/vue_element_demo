@@ -70,7 +70,9 @@
             </el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteUser(props.row.id)"></el-button>
             <el-tooltip  effect="dark" content="分配角色" placement="top">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini"
+              @click="userAssignment(props.row)">
+              </el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -80,7 +82,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryInfo.pagenum"
-        :page-sizes="[1, 5, 10, 20]"
+        :page-sizes="[1,5,10,20]"
         :page-size="queryInfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total">
@@ -135,6 +137,32 @@
         <el-button type="primary" @click="userEditCommit">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配权限对话框 -->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="userAssignmentDialog"
+      @close="resetAssignmentRole"
+      width="50%"
+     >
+     <div>
+      <p>当前的用户： {{userRole.username}}</p>
+      <p>当前的角色： {{userRole.role_name}}</p>
+      <p>分配新角色：
+        <el-select v-model="selectRole" placeholder="请选择">
+          <el-option
+            v-for="item in roleList"
+            :key="item.id"
+            :label="item.roleName"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </p>
+     </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="userAssignmentDialog = !userAssignmentDialog">取 消</el-button>
+        <el-button type="primary" @click="userAssignmentCommit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -169,6 +197,8 @@ export default {
       userDialogVisible: false,
       // 显示修改用户信息对话框开关
       userEditDialog: false,
+      // 显示用户分配权限对话框开关
+      userAssignmentDialog: false,
       // 添加用户表单
       addUserForm: {
         username: '',
@@ -183,6 +213,12 @@ export default {
         mobile: '',
         email: ''
       },
+      // 需要被分配角色的用户信息
+      userRole: {},
+      // 用户角色；列表
+      roleList: [],
+      // 选择的角色
+      selectRole: '',
       // 用户表单验证规则
       userRules: {
         username: [
@@ -232,9 +268,9 @@ export default {
       const { data: result } = await this.axios.put(`users/${userInfo.id}/state/${userInfo.mg_state}`)
       if (result.meta.status !== 200) {
         userInfo.mg_state = !userInfo.mg_state
-        return this.$message.error('更新用户失败')
+        return this.$message.error('更新用户状态失败')
       }
-      this.$message.success('更新用户成功')
+      this.$message.success('更新用户状态成功')
     },
     // 重置添加用户表单
     resetUserForm () {
@@ -295,6 +331,30 @@ export default {
       }
       this.$message.success(result.meta.msg)
       this.getUserList()
+    },
+    // 分配角色
+    async userAssignment (role) {
+      this.userRole = role
+      const { data: result } = await this.axios.get('roles')
+      if (result.meta.status !== 200) return this.$message.error('获取用户权限列表失败')
+      this.roleList = result.data
+      this.userAssignmentDialog = !this.userAssignmentDialog
+    },
+    // 分配角色提交
+    async userAssignmentCommit () {
+      if (!this.selectRole) return this.$message.error('请选择分配的角色')
+      const { data: result } = await this.axios.put(`users/${this.userRole.id}/role`, {
+        rid: this.selectRole
+      })
+      if (result.meta.status !== 200) return this.$message.error('分配新角色失败')
+      this.$message.success(result.meta.msg)
+      this.getUserList()
+      this.userAssignmentDialog = !this.userAssignmentDialog
+    },
+    // 关闭分配角色对话框 重置被选中的角色
+    resetAssignmentRole () {
+      this.userRole = {}
+      this.selectRole = ''
     }
   },
   created () {
@@ -303,4 +363,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+/* .el-select {
+    width: 130px;
+  } */
 </style>

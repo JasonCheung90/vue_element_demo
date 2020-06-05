@@ -188,7 +188,7 @@ export default {
       queryInfo: {
         query: '',
         pagenum: 1,
-        pagesize: 2
+        pagesize: 10
       },
       total: 0,
       // 用户数据列表

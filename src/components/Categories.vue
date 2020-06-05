@@ -32,11 +32,11 @@
         <el-button type="primary"
         icon="el-icon-edit"
         size="mini"
-        @click="showEditCate(props.row.id)">
+        @click="showEditCate(props.row.cat_id)">
           编辑
         </el-button>
         <el-button type="danger" icon="el-icon-delete" size="mini"
-          @click="deleteCate(props.row.id)">
+          @click="deleteCate(props.row.cat_id)">
           删除
         </el-button>
       </template>
@@ -80,6 +80,22 @@
         <el-button type="primary" @click="addCate">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 修改角色对话框 -->
+     <el-dialog
+      title="编辑修改分类"
+      :visible.sync="cateEditDialog"
+      width="50%"
+     >
+      <el-form :model="cateEditForm" :rules="cateRules" ref="cateEditFormRef" label-width="100px">
+        <el-form-item label="角色名称" prop="cat_name">
+          <el-input v-model="cateEditForm.cat_name" ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cateEditDialog = !cateEditDialog">取 消</el-button>
+        <el-button type="primary" @click="cateEditCommit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -98,6 +114,8 @@ export default {
       total: 0,
       // 控制显示添加分类的开关
       cateDialogVisible: false,
+      // 控制显示修改分类的开关
+      cateEditDialog: false,
       // 分类列表
       cateList: [],
       // table列的数据
@@ -129,6 +147,11 @@ export default {
         cat_name: '',
         cat_pid: 0,
         cat_level: 0
+      },
+      // 修改分类表单
+      cateEditForm: {
+        cat_id: '',
+        cat_name: ''
       },
       // 添加角色表单验证规则
       cateRules: {
@@ -208,8 +231,41 @@ export default {
         this.cateDialogVisible = !this.cateDialogVisible
       })
     },
-    showEditCate () {},
-    deleteCate () {}
+    // 修改编辑分类
+    async showEditCate (id) {
+      const { data: result } = await this.axios.get(`categories/${id}`)
+      if (result.meta.status !== 200) {
+        return this.$message.error('查询分类数据失败')
+      }
+      this.cateEditForm = result.data
+      this.cateEditDialog = !this.cateEditDialog
+    },
+    // 修改编辑分类提交
+    cateEditCommit () {
+      this.$refs.cateEditFormRef.validate(async check => {
+        if (!check) return false
+        const { data: result } = await this.axios.put(`categories/${this.cateEditForm.cat_id}`, this.cateEditForm)
+        if (result.meta.status !== 200) {
+          return this.$message.error('编辑更新分类失败')
+        }
+        this.getCateList()
+        this.$message.success(result.meta.msg)
+        this.cateEditDialog = !this.cateEditDialog
+      })
+    },
+    async deleteCate (id) {
+      const confirmRes = await this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(error => error)
+
+      if (confirmRes !== 'confirm') return this.$message.info('已经取消删除')
+      const { data: result } = await this.axios.delete(`categories/${id}`)
+      if (result.meta.status !== 200) return this.$message.error('删除用户失败')
+      this.$message.success(result.meta.msg)
+      this.getCateList()
+    }
   },
   created () {
     this.getCateList()

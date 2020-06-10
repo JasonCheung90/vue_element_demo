@@ -19,16 +19,16 @@
       :columns="columns"
       :expand-type="false"
       :selection-type="false">
-      <template slot="isEffective" scope="props">
+      <template slot="isEffective" slot-scope="props">
         <i class="el-icon-success lightGreen" v-if="props.row.cat_deleted == false"></i>
         <i class="el-icon-error red" v-else></i>
       </template>
-      <template slot="sort" scope="props">
+      <template slot="sort" slot-scope="props">
         <el-tag v-if="props.row.cat_level ==0">一级</el-tag>
         <el-tag type="success" v-else-if="props.row.cat_level ==1">二级</el-tag>
         <el-tag type="warning" v-else>三级</el-tag>
       </template>
-      <template slot="operation" scope="props">
+      <template slot="operation" slot-scope="props">
         <el-button type="primary"
         icon="el-icon-edit"
         size="mini"

@@ -50,6 +50,11 @@ export default [
         component: () => import(/* webpackChunkName: "goods" */ '../components/Goods')
       },
       {
+        path: '/addgoods',
+        name: 'addgoods',
+        component: () => import(/* webpackChunkName: "addgoods" */ '../components/Addgoods')
+      },
+      {
         path: '/categories',
         name: 'categories',
         component: () => import(/* webpackChunkName: "categories" */ '../components/Categories')

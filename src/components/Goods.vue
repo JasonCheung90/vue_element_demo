@@ -189,7 +189,6 @@ export default {
       this.$refs.goodEditFormRef.validate(async check => {
         if (!check) return false
         const { data: result } = await this.axios.put(`goods/${this.goodEditForm.goods_id}`, this.goodEditForm)
-        console.log(result)
 
         if (result.meta.status !== 200) {
           return this.$message.error('修改商品失败')

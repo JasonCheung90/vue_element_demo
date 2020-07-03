@@ -5,13 +5,8 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import './assets/css/global.css'
 import './assets/fonts/iconfont.css'
-import './element'
-import 'element-ui/lib/theme-chalk/index.css'
 import ZkTable from 'vue-table-with-tree-grid'
 import VueQuillEditor from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios)

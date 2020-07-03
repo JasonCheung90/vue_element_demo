@@ -13,8 +13,6 @@
 </template>
 
 <script>
-import echarts from 'echarts'
-import _ from 'lodash'
 export default {
   name: 'reports',
   data () {
@@ -53,9 +51,11 @@ export default {
   },
   methods: {
     async getReportList () {
+      const echarts = await import('echarts')
       const myChart = echarts.init(document.getElementById('main'))
       const { data: result } = await this.axios.get('reports/type/1')
       if (result.meta.status !== 200) return this.$message.error('获取数据报表失败')
+      const _ = await import('lodash')
       const options = _.merge(result.data, this.reportObj)
       myChart.setOption(options)
     }

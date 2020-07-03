@@ -106,7 +106,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="orderEditDialog = !orderEditDialog">取 消</el-button>
-        <el-button type="primary" @click="orderEditCommit">确 定</el-button>
+        <el-button type="primary">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 查看物流对话框 -->
@@ -131,7 +131,6 @@
 </template>
 
 <script>
-import cityData from '@/citydata.js'
 export default {
   name: 'orders',
   data () {
@@ -162,7 +161,7 @@ export default {
           { required: true, message: '请输入详细地址', trigger: 'blur' }
         ]
       },
-      cityData,
+      cityData: [],
       expressInfo: []
 
     }
@@ -193,18 +192,21 @@ export default {
     resetOrderForm () {
       this.$refs.orderEditFormRef.resetFields()
     },
-    orderEditCommit () {
-
-    },
     async orderExpress () {
       const { data: result } = await this.axios.get('/kuaidi/1106975712662')
       if (result.meta.status !== 200) return this.$message.error('获取物流数据失败')
       this.expressInfo = result.data
       this.orderExpressDialog = true
+    },
+    // 请求城市数据
+    async getCityData () {
+      const cityResult = await import('./citydata')
+      this.cityData = cityResult
     }
   },
   created () {
     this.getOrderList()
+    this.getCityData()
   }
 }
 </script>

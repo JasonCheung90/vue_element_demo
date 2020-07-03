@@ -74,10 +74,7 @@
           </el-tab-pane>
           <el-tab-pane label="商品内容">
             <quill-editor v-model="addGoodForm.goods_introduce"
-                ref="myQuillEditor"
-                @blur="onEditorBlur($event)"
-                @focus="onEditorFocus($event)"
-                @ready="onEditorReady($event)">
+                ref="myQuillEditor">
             </quill-editor>
             <el-button type="primary" @click="addGoodCommit">添加商品</el-button>
           </el-tab-pane>
@@ -96,7 +93,6 @@
 </template>
 
 <script>
-import _ from 'lodash'
 export default {
   name: 'addgoods',
   data () {
@@ -204,21 +200,12 @@ export default {
       }
       this.addGoodForm.pics.push(picObj)
     },
-    // 富文本编辑器事件
-    onEditorBlur (event) {
-      console.log('blur', event)
-    },
-    onEditorFocus (event) {
-      console.log('focus', event)
-    },
-    onEditorReady (event) {
-      console.log('ready', event)
-    },
     // 商品添加提交
     addGoodCommit () {
       this.$refs.addGoodFormRef.validate(async check => {
         if (!check) return this.$message.error('请输入商品的必要信息')
         // 对象深拷贝
+        const _ = await import('lodash')
         const form = _.cloneDeep(this.addGoodForm)
         form.goods_cat = form.goods_cat.join(',')
         this.manyData.forEach(item => {
@@ -233,10 +220,8 @@ export default {
 
         const { data: result } = await this.axios.post('goods', form)
         if (result.meta.status !== 201) {
-          console.log(result)
           return this.$message.error('创建商品失败')
         }
-        console.log(result)
         this.$message.success(result.meta.msg)
         this.$router.push('/goods')
       })
